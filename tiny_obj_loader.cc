@@ -81,8 +81,8 @@ static inline int fixIndex(int idx, int n)
 static inline std::string parseString(const char*& token)
 {
   std::string s;
-  int b = strspn(token, " \t");
-  int e = strcspn(token, " \t\r");
+  std::size_t b = strspn(token, " \t");
+  std::size_t e = strcspn(token, " \t\r");
   s = std::string(&token[b], &token[e]);
 
   token += (e - b);
@@ -196,7 +196,7 @@ updateVertex(
     texcoords.push_back(in_texcoords[2*i.vt_idx+1]);
   }
 
-  unsigned int idx = positions.size() / 3 - 1;
+  unsigned int idx = static_cast<unsigned int>(positions.size() / 3 - 1);
   vertexCache[i] = idx;
 
   return idx;
@@ -319,7 +319,7 @@ std::string LoadMtl (
       // flush previous material.
       if (!material.name.empty())
       {
-          material_map.insert(std::pair<std::string, int>(material.name, materials.size()));
+          material_map.insert(std::pair<std::string, int>(material.name, static_cast<int>(materials.size())));
           materials.push_back(material);
       }
 
@@ -456,14 +456,14 @@ std::string LoadMtl (
       _space = strchr(token, '\t');
     }
     if(_space) {
-      int len = _space - token;
+      intptr_t len = _space - token;
       std::string key(token, len);
       std::string value = _space + 1;
       material.unknown_parameter.insert(std::pair<std::string, std::string>(key, value));
     }
   }
   // flush last material.
-  material_map.insert(std::pair<std::string, int>(material.name, materials.size()));
+  material_map.insert(std::pair<std::string, int>(material.name, static_cast<int>(materials.size())));
   materials.push_back(material);
 
   return err.str();
@@ -602,9 +602,9 @@ std::string LoadObj(
 
       std::vector<vertex_index> face;
       while (!isNewLine(token[0])) {
-        vertex_index vi = parseTriple(token, v.size() / 3, vn.size() / 3, vt.size() / 2);
+        vertex_index vi = parseTriple(token, static_cast<int>(v.size() / 3), static_cast<int>(vn.size() / 3), static_cast<int>(vt.size() / 2));
         face.push_back(vi);
-        int n = strspn(token, " \t\r");
+        std::size_t n = strspn(token, " \t\r");
         token += n;
       }
 
